@@ -1,0 +1,1 @@
+ALTER TABLE orders add user_id INT REFERENCES users(id);
