@@ -2,9 +2,9 @@ import client from "../database";
 
 type user = {
   id: number;
-  firsName: string;
-  lastName: string | null;
-  password: string;
+  first_name: string;
+  last_name: string | null;
+  password_digest: string;
 };
 
 class userStore {
@@ -51,6 +51,21 @@ class userStore {
       throw new Error(
         `Server issue: user - create(firstName, lastName, password)`
       );
+    }
+  }
+
+  async delete(id: number): Promise<user | null> {
+    try {
+      const conn = await client.connect();
+      const sql = `DELETE FROM users where id = $1 RETURNING *;`;
+      const result = await conn.query(sql, [id]);
+      if (result.rows.length) {
+        return result.rows[0];
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw new Error(`Server issue: user - delete(id)`);
     }
   }
 }

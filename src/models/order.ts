@@ -24,7 +24,7 @@ class orderStore {
       const sql = `SELECT * FROM orders WHERE user_id = $1 AND status = $2;`;
       const result = await conn.query(sql, [user_id, status]);
       conn.release();
-      if (result.rows) {
+      if (result.rows.length) {
         return result.rows;
       } else {
         return null;
@@ -43,6 +43,21 @@ class orderStore {
       return result.rows[0];
     } catch (error) {
       throw new Error(`Server issue: order - create(user_id)`);
+    }
+  }
+
+  async delete(id: number): Promise<order | null> {
+    try {
+      const conn = await client.connect();
+      const sql = `DELETE FROM orders where id = $1 RETURNING *;`;
+      const result = await conn.query(sql, [id]);
+      if (result.rows.length) {
+        return result.rows[0];
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw new Error(`Server issue: order - delete(id)`);
     }
   }
 }

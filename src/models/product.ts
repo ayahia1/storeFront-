@@ -22,7 +22,7 @@ class productStore {
   async show(id: number): Promise<product | null> {
     try {
       const conn = await client.connect();
-      const sql = `SELECT * FROM products WHERE id = $1`;
+      const sql = `SELECT * FROM products WHERE id = $1;`;
       const result = await conn.query(sql, [id]);
       conn.release();
       if (result.rows.length) {
@@ -35,11 +35,15 @@ class productStore {
     }
   }
 
-  async create(name: string, price: number): Promise<product> {
+  async create(
+    name: string,
+    price: number,
+    category: string | null
+  ): Promise<product> {
     try {
       const conn = await client.connect();
-      const sql = `INSERT INTO PRODUCTS () VALUES ()  RETURNING *;`;
-      const result = await conn.query(sql, [name, price]);
+      const sql = `INSERT INTO PRODUCTS (name, price, category) VALUES ($1, $2, $3)  RETURNING *;`;
+      const result = await conn.query(sql, [name, price, category]);
       conn.release();
       return result.rows[0];
     } catch (error) {
