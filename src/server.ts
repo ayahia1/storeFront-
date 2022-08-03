@@ -5,7 +5,7 @@ import routes from "./routes";
 const app: express.Application = express();
 const address: string = "0.0.0.0:3000";
 
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(routes);
 app.get("/", function (req: Request, res: Response) {
