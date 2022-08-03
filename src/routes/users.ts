@@ -4,7 +4,7 @@ import validate_names_password from "../middlewares/validate_names_password";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import validateID from "../middlewares/validateID";
+import validateID from "../utilities/validateID";
 
 dotenv.config();
 const { JWT_TOKEN, PEPPER, SALT_ROUNDS } = process.env;
@@ -22,12 +22,14 @@ users.get("/", async (_req: Request, res: Response): Promise<void> => {
 });
 
 users.get("/:id", async (req: Request, res: Response): Promise<void> => {
-  if (validateID(req.params.id) == false) {
-    res.status(400).send(`Bad Request: ids should be positive numeric numbers`);
-    return;
-  }
-
   try {
+    if (validateID(req.params.id) == false) {
+      res
+        .status(400)
+        .send(`Bad Request: ids should be positive numeric numbers`);
+      return;
+    }
+
     const id = req.params.id;
     const result: user | null = await store.show(parseInt(id));
 
@@ -43,7 +45,7 @@ users.get("/:id", async (req: Request, res: Response): Promise<void> => {
 });
 
 users.post(
-  "/create",
+  "/",
   validate_names_password,
   async (req: Request, res: Response): Promise<void> => {
     try {
@@ -75,24 +77,23 @@ users.post(
 users.post(
   "/authenticate",
   async (req: Request, res: Response): Promise<void> => {
-    if (
-      typeof req.body.id == "undefined" ||
-      typeof req.body.password == "undefined"
-    ) {
-      res
-        .status(400)
-        .send("Bad Request: You need to provide an id and password");
-      return;
-    }
-
-    if (validateID(req.body.id) == false) {
-      res
-        .status(400)
-        .send(`Bad Request: ids should be positive numeric numbers`);
-      return;
-    }
-
     try {
+      if (
+        typeof req.body.id == "undefined" ||
+        typeof req.body.password == "undefined"
+      ) {
+        res
+          .status(400)
+          .send("Bad Request: You need to provide an id and password");
+        return;
+      }
+
+      if (validateID(req.body.id) == false) {
+        res
+          .status(400)
+          .send(`Bad Request: ids should be positive numeric numbers`);
+        return;
+      }
       const id = req.body.id;
       const password = req.body.password;
       const user: user | null = await store.show(parseInt(id));
