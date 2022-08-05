@@ -1,9 +1,12 @@
 import express from "express";
 import { productStore, product } from "../models/product";
+import dashboard from "../services/dashboard";
 import validateID from "../utilities/validateID";
 
+const board = new dashboard();
 const store = new productStore();
 const products = express.Router();
+
 products.get("/", async (_req, res): Promise<void> => {
   try {
     const results = await store.index();
@@ -36,13 +39,30 @@ products.get("/:id", async (req, res): Promise<void> => {
   }
 });
 
+products.get("/category/:category", async (req, res): Promise<void> => {
+  try {
+    const result = await board.productsByCategory(req.params.category);
+    if (result) {
+      res.json(result);
+    } else {
+      res
+        .status(404)
+        .send(
+          `Resource not found: There are no products with the requested category: ${req.params.category}`
+        );
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server issue - try later");
+  }
+});
+
 products.post("/", async (req, res): Promise<void> => {
   try {
     if (
       typeof req.body.name == "undefined" ||
       typeof req.body.price == "undefined" ||
-      req.body.price == "" ||
-      parseFloat(req.body.price) == NaN
+      isNaN(parseFloat(req.body.price))
     ) {
       res
         .status(400)

@@ -14,7 +14,7 @@ const store = new userStore();
 users.get("/", async (_req: Request, res: Response): Promise<void> => {
   try {
     const results = await store.index();
-    res.json(results);
+    res.send(results);
   } catch (error) {
     console.log(error);
     res.status(500).send("Server issue - try later");
@@ -116,4 +116,5 @@ users.post(
     }
   }
 );
+
 export default users;
