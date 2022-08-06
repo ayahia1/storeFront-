@@ -13,11 +13,11 @@ const verifyAuthentication = async (
     const authorizationHeader = req.headers.authorization as string;
     const token = authorizationHeader.split(" ")[1];
     await jwt.verify(token, tokenSecret);
-    return next();
-  } catch (err) {
+    next();
+  } catch (error) {
+    console.log(error);
     res.status(401);
     res.json("Access denied, invalid token");
   }
 };
-
 export default verifyAuthentication;

@@ -5,6 +5,7 @@ type user = {
   first_name: string;
   last_name: string | null;
   password_digest: string;
+  role: string;
 };
 
 class userStore {

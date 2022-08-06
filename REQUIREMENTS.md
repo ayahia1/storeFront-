@@ -18,7 +18,7 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 - Index [token required] `[GET] 'users/'`
 - Show [token required] `[GET] 'users/:id'`
-- Create N[token required] `[POST] 'users/'`
+- Create `[POST] 'users/'`
 - Authenticate `[POST] 'users/authenticate'`
 
 #### Orders
@@ -47,7 +47,7 @@ These are the notes from a meeting with the frontend developer that describe wha
 - lastName
 - password
 
-`TABLE: users (id: SERIAL PRIMARY KEY, first_name: VARCHAR(50) NOT NULL, last_name: VARCHAR(50), password_digest: text NOT NULL)`
+`TABLE: users (id: SERIAL PRIMARY KEY, first_name: VARCHAR(50) NOT NULL, last_name: VARCHAR(50), password_digest: text NOT NULL), role:VARCHAR(10) DEFAULT 'client'`
 
 #### Orders
 
