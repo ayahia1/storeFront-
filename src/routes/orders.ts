@@ -78,18 +78,18 @@ orders.get("/user/:id/:status", async (req, res) => {
 
 orders.post("/", async (req, res) => {
   try {
-    if (typeof req.body.id != "string" || !req.body.id.length) {
+    if (typeof req.body.user_id != "string" || !req.body.user_id.length) {
       res
         .status(400)
         .send(`Bad Request: You need to provide a key value pair for the id`);
-    } else if (validateID(req.body.id) == false) {
+    } else if (validateID(req.body.user_id) == false) {
       res
         .status(400)
         .send(`Bad Request: ids should be positive numeric numbers`);
-    } else if ((await users.show(parseInt(req.body.id))) == null) {
+    } else if ((await users.show(parseInt(req.body.user_id))) == null) {
       res.status(400).send(`Bad Request: user doesn't exist`);
     } else {
-      const order = await store.create(parseInt(req.body.id));
+      const order = await store.create(parseInt(req.body.user_id));
       res.json(order);
     }
   } catch (error) {
