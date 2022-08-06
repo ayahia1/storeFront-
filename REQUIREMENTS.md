@@ -38,12 +38,16 @@ These are the notes from a meeting with the frontend developer that describe wha
 - price
 - [OPTIONAL] category
 
+`TABLE: products (id: SERIAL PRIMARY KEY, name: VARCHAR(50) NOT NULL, price: REAL NOT NULL, category: VARCHAR(100))`
+
 #### User
 
 - id
 - firstName
 - lastName
 - password
+
+`TABLE: users (id: SERIAL PRIMARY KEY, first_name: VARCHAR(50) NOT NULL, last_name: VARCHAR(50), password_digest: text NOT NULL)`
 
 #### Orders
 
@@ -52,3 +56,7 @@ These are the notes from a meeting with the frontend developer that describe wha
 - quantity of each product in the order
 - user_id
 - status of order (active or complete)
+
+`TABLE: orders (id: SERIAL PRIMARY KEY, status: ENUM('active', 'complete'), user_id: int [REFERENCES users(id)]`
+
+`TABLE: orders_products (id SERIAL PRIMARY KEY, order_id INT [REFERENCES orders(id)], product_id INT[REFERENCES products(id)], quantity BIGINT)`
