@@ -19,20 +19,16 @@ class dashboard {
     }
   }
 
-  async ordersByuser(user_id: number, status: string): Promise<order[] | null> {
+  async ordersByuser(user_name: string, status: boolean): Promise<order[]> {
     try {
       const conn = await client.connect();
-      const sql = `SELECT * FROM orders WHERE user_id = $1 AND status = $2;`;
-      const result = await conn.query(sql, [user_id, status]);
+      const sql = `SELECT * FROM orders WHERE user_name = $1 AND status = $2;`;
+      const result = await conn.query(sql, [user_name, status]);
       conn.release();
-      if (result.rows.length) {
-        return result.rows;
-      } else {
-        return null;
-      }
+      return result.rows;
     } catch (error) {
       throw new Error(
-        "Server issue: dashboard - ordersByuser(user_id, status)"
+        "Server issue: dashboard - ordersByuser(user_name, status)"
       );
     }
   }

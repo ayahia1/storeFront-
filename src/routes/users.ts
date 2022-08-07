@@ -1,16 +1,19 @@
 import express, { Request, Response, NextFunction } from "express";
 import { user, userStore } from "../models/user";
+import { order } from "../models/order";
 import validate_names_password from "../middlewares/validate_names_password";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import validateID from "../utilities/validateID";
+import dashboard from "../services/dashboard";
 
 dotenv.config();
 const { JWT_TOKEN, PEPPER, SALT_ROUNDS } = process.env;
 
 const users = express.Router();
 const store = new userStore();
+const board = new dashboard();
+
 users.get("/", async (_req: Request, res: Response): Promise<void> => {
   try {
     const results = await store.index();
@@ -21,23 +24,38 @@ users.get("/", async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-users.get("/:id", async (req: Request, res: Response): Promise<void> => {
+users.get("/:user_name", async (req: Request, res: Response): Promise<void> => {
   try {
-    if (validateID(req.params.id) == false) {
-      res
-        .status(400)
-        .send(`Bad Request: ids should be positive numeric numbers`);
-      return;
-    }
-
-    const id = req.params.id;
-    const result: user | null = await store.show(parseInt(id));
+    const result: user | null = await store.show(req.params.user_name);
 
     if (result == null) {
-      res.status(404).send("id not found");
+      res.status(404).send("user not found");
     } else {
       res.json(result);
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server issue - try later");
+  }
+});
+
+users.get("/:user_name/orders", async (req, res) => {
+  try {
+    const result: order[] = await board.ordersByuser(
+      req.params.user_name,
+      true
+    );
+    res.json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server issue - try later");
+  }
+});
+
+users.get("/:user_name/orders/completed", async (req, res) => {
+  try {
+    const result = await board.ordersByuser(req.params.user_name, false);
+    res.jsonp(result);
   } catch (error) {
     console.log(error);
     res.status(500).send("Server issue - try later");
@@ -50,20 +68,20 @@ users.post(
   async (req: Request, res: Response): Promise<void> => {
     try {
       const firstName = req.body.firstName;
+      const user_name = req.body.user_name;
       let lastName;
       if (typeof req.body.lastName == "undefined") {
         lastName = null;
       } else {
         lastName = req.body.lastName;
       }
-      const password = req.body.password;
-      const password_digest = bcrypt.hashSync(
-        password + PEPPER,
+      const password = bcrypt.hashSync(
+        req.body.password + PEPPER,
         parseInt(SALT_ROUNDS as string) as number
       );
-      const user = await store.create(firstName, lastName, password_digest);
+      const user = await store.create(firstName, user_name, lastName, password);
       const token = await jwt.sign(
-        { firstName: firstName, id: user.id },
+        { firstName: firstName, user_name: user.user_name },
         JWT_TOKEN as string
       );
       res.send(token);
@@ -79,30 +97,24 @@ users.post(
   async (req: Request, res: Response): Promise<void> => {
     try {
       if (
-        typeof req.body.id == "undefined" ||
+        typeof req.body.user_name == "undefined" ||
         typeof req.body.password == "undefined"
       ) {
         res
           .status(400)
-          .send("Bad Request: You need to provide an id and password");
+          .send("Bad Request: You need to provide a user_name and password");
         return;
       }
 
-      if (validateID(req.body.id) == false) {
-        res
-          .status(400)
-          .send(`Bad Request: ids should be positive numeric numbers`);
-        return;
-      }
-      const id = req.body.id;
+      const user_name = req.body.user_name;
       const password = req.body.password;
-      const user: user | null = await store.show(parseInt(id));
+      const user: user | null = await store.show(user_name);
       if (user == null) {
-        res.status(400).send("Bad Request: Invalid user id");
+        res.status(400).send("Bad Request: Invalid user_name");
       } else {
-        if (await bcrypt.compare(password + PEPPER, user.password_digest)) {
+        if (await bcrypt.compare(password + PEPPER, user.password)) {
           const token = await jwt.sign(
-            { firstName: user.first_name, id: user.id },
+            { user_name: user.user_name, role: user.role },
             JWT_TOKEN as string
           );
           res.send(token);

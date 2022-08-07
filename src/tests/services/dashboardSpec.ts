@@ -14,19 +14,13 @@ describe("Dashboard functions tests", () => {
     expect(result).toBeNull();
   });
 
-  it(`Check that show returns null when id doesn't exist: active`, async (): Promise<void> => {
-    const result = await board.ordersByuser(4, "active");
-    expect(result).toBeNull();
+  it(`Check that show returns empty array when user_name doesn't exist: active`, async (): Promise<void> => {
+    const result = await board.ordersByuser("randome", true);
+    expect(result.length).toBe(0);
   });
 
-  it(`Check that show returns null when id doesn't exist: complete`, async (): Promise<void> => {
-    const result = await board.ordersByuser(4, "complete");
-    expect(result).toBeNull();
-  });
-
-  it("Check that show throws an error when status is not valid", async () => {
-    await expectAsync(board.ordersByuser(4, "wrongStatus")).toBeRejectedWith(
-      new Error("Server issue: dashboard - ordersByuser(user_id, status)")
-    );
+  it(`Check that show returns empty array when user_name doesn't exist: completed`, async (): Promise<void> => {
+    const result = await board.ordersByuser("randome", false);
+    expect(result.length).toBe(0);
   });
 });

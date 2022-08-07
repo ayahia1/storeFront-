@@ -1,8 +1,8 @@
 import client from "../database";
 type order = {
   id: number;
-  status: string;
-  user_id: number;
+  status: boolean;
+  user_name: string;
 };
 
 class orderStore {
@@ -35,11 +35,11 @@ class orderStore {
     }
   }
 
-  async create(user_id: number): Promise<order> {
+  async create(user_name: string): Promise<order> {
     try {
       const conn = await client.connect();
-      const sql = `INSERT INTO ORDERS (user_id, status) VALUES ($1, 'active') RETURNING *`;
-      const result = await conn.query(sql, [user_id]);
+      const sql = `INSERT INTO ORDERS (user_name) VALUES ($1) RETURNING *`;
+      const result = await conn.query(sql, [user_name]);
       conn.release();
       return result.rows[0];
     } catch (error) {

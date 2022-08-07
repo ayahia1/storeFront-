@@ -11,22 +11,22 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Index `[GET] 'products/'`
 - Show `[GET] 'products/:id'`
 - Create [token required] `[POST] products/`
-- [OPTIONAL] Top 5 most popular products
 - [OPTIONAL] Products by category (args: product category) `[GET] products/category/:category`
+- [OPTIONAL] Top 5 most popular products
 
 #### Users
 
 - Index [token required] `[GET] 'users/'`
-- Show [token required] `[GET] 'users/:id'`
+- Show [token required] `[GET] 'users/:user_name'`
 - Create `[POST] 'users/'`
 - Authenticate `[POST] 'users/authenticate'`
+- Current Orders by user (args: user id) [token required] `[GET] 'users/:user_name/orders/'`
+- [OPTIONAL] Completed Orders by user [token required] `[GET] 'users/:user_name/orders/completed'`
 
 #### Orders
 
 - Index `[GET] 'orders/'`
 - Show [token required] `[GET] 'orders/:id'`
-- Current Order by user (args: user id)[token required] `[GET] 'orders/user/:id/active'`
-- [OPTIONAL] Completed Orders by user (args: user id)[token required] `[GET] 'orders/user/:id/complete'`
 - Create `[POST] 'orders/'`
 
 ## Data Shapes
@@ -43,20 +43,27 @@ These are the notes from a meeting with the frontend developer that describe wha
 #### User
 
 - id
+- user_name
 - firstName
 - lastName
 - password
+- role
 
-`TABLE: users (id: SERIAL PRIMARY KEY, first_name: VARCHAR(50) NOT NULL, last_name: VARCHAR(50), password_digest: text NOT NULL), role:VARCHAR(10) DEFAULT 'client'`
+`TABLE: users (id: SERIAL PRIMARY KEY, user_name: VARCHAR(50), first_name: VARCHAR(50) NOT NULL, last_name: VARCHAR(50), password: text NOT NULL, role:VARCHAR(10) DEFAULT 'client'`
 
 #### Orders
 
 - id
-- id of each product in the order
-- quantity of each product in the order
 - user_id
-- status of order (active or complete)
+- status of order (true for active or false for complete)
 
-`TABLE: orders (id: SERIAL PRIMARY KEY, status: ENUM('active', 'complete'), user_id: int [REFERENCES users(id)]`
+`TABLE: orders (id: SERIAL PRIMARY KEY, status: boolean DEFAULT true, user_id: int [REFERENCES users(id)]`
+
+### Orders_Products
+
+- id
+- order_id
+- product_id
+- quantity of each product in the order
 
 `TABLE: orders_products (id SERIAL PRIMARY KEY, order_id INT [REFERENCES orders(id)], product_id INT[REFERENCES products(id)], quantity BIGINT)`
