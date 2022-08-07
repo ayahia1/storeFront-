@@ -9,7 +9,9 @@ const address: string = "0.0.0.0:3000";
 const corsOption = {
   optionsSuccessStatus: 200, // for some lagacy browsers
 };
+
 app.use(cors(corsOption));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(routes);
 

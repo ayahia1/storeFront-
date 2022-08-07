@@ -1,8 +1,8 @@
 import client from "../database";
 type order = {
   id: number;
-  status: string;
-  user_id: number;
+  status: boolean;
+  user_name: string;
 };
 
 class orderStore {
@@ -18,27 +18,28 @@ class orderStore {
     }
   }
 
-  async show(user_id: number, status: string): Promise<order[] | null> {
+  async show(order_id: number): Promise<order | null> {
     try {
       const conn = await client.connect();
-      const sql = `SELECT * FROM orders WHERE user_id = $1 AND status = $2;`;
-      const result = await conn.query(sql, [user_id, status]);
+      const sql = `SELECT * FROM orders where id = $1`;
+      const result = await conn.query(sql, [order_id]);
       conn.release();
       if (result.rows.length) {
-        return result.rows;
+        return result.rows[0];
       } else {
         return null;
       }
     } catch (error) {
-      throw new Error("Server issue: order - show(user_id, status)");
+      console.log(error);
+      throw new Error(`Server issue: order - show(id)`);
     }
   }
 
-  async create(user_id: number): Promise<order> {
+  async create(user_name: string): Promise<order> {
     try {
       const conn = await client.connect();
-      const sql = `INSERT INTO ORDERS (user_id, status) VALUES ($1, 'active') RETURNING *`;
-      const result = await conn.query(sql, [user_id]);
+      const sql = `INSERT INTO ORDERS (user_name) VALUES ($1) RETURNING *`;
+      const result = await conn.query(sql, [user_name]);
       conn.release();
       return result.rows[0];
     } catch (error) {
@@ -61,5 +62,4 @@ class orderStore {
     }
   }
 }
-
 export { order, orderStore };
