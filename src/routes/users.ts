@@ -6,6 +6,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import dashboard from "../services/dashboard";
+import verifyAuthentication from "../middlewares/verifyAuthentication";
+import verifyAdmin from "../middlewares/verifyAdmin";
+import verifyIdentity from "../middlewares/verifyIdentity";
 
 dotenv.config();
 const { JWT_TOKEN, PEPPER, SALT_ROUNDS } = process.env;
@@ -14,59 +17,84 @@ const users = express.Router();
 const store = new userStore();
 const board = new dashboard();
 
-users.get("/", async (_req: Request, res: Response): Promise<void> => {
-  try {
-    const results = await store.index();
-    res.send(results);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Server issue - try later");
-  }
-});
-
-users.get("/:user_name", async (req: Request, res: Response): Promise<void> => {
-  try {
-    const result: user | null = await store.show(req.params.user_name);
-
-    if (result == null) {
-      res.status(404).send("user not found");
-    } else {
-      res.json(result);
+users.get(
+  "/",
+  verifyAuthentication,
+  verifyAdmin,
+  async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const results = await store.index();
+      res.send(results);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Server issue - try later");
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Server issue - try later");
   }
-});
+);
 
-users.get("/:user_name/orders", async (req, res) => {
-  try {
-    const result: order[] = await board.ordersByuser(
-      req.params.user_name,
-      true
-    );
-    res.json(result);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Server issue - try later");
-  }
-});
+users.get(
+  "/:user_name",
+  verifyAuthentication,
+  verifyAdmin,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const result: user | null = await store.show(req.params.user_name);
 
-users.get("/:user_name/orders/completed", async (req, res) => {
-  try {
-    const result = await board.ordersByuser(req.params.user_name, false);
-    res.jsonp(result);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Server issue - try later");
+      if (result == null) {
+        res.status(404).send("user not found");
+      } else {
+        res.json(result);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Server issue - try later");
+    }
   }
-});
+);
+
+users.get(
+  "/:user_name/orders",
+  verifyAuthentication,
+  verifyIdentity,
+  async (req, res) => {
+    try {
+      const result: order[] = await board.ordersByuser(
+        req.params.user_name,
+        true
+      );
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Server issue - try later");
+    }
+  }
+);
+
+users.get(
+  "/:user_name/orders/completed",
+  verifyAuthentication,
+  verifyIdentity,
+  async (req, res) => {
+    try {
+      const result = await board.ordersByuser(req.params.user_name, false);
+      res.jsonp(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Server issue - try later");
+    }
+  }
+);
 
 users.post(
   "/",
   validate_names_password,
   async (req: Request, res: Response): Promise<void> => {
     try {
+      if (await store.show(req.body.user_name)) {
+        res.sendStatus(400).send(`Bad request: user_name already exists`);
+        return;
+      }
+
       const firstName = req.body.firstName;
       const user_name = req.body.user_name;
       let lastName;
@@ -81,7 +109,7 @@ users.post(
       );
       const user = await store.create(firstName, user_name, lastName, password);
       const token = await jwt.sign(
-        { firstName: firstName, user_name: user.user_name },
+        { user_name: user.user_name },
         JWT_TOKEN as string
       );
       res.send(token);
@@ -114,7 +142,7 @@ users.post(
       } else {
         if (await bcrypt.compare(password + PEPPER, user.password)) {
           const token = await jwt.sign(
-            { user_name: user.user_name, role: user.role },
+            { user_name: user.user_name },
             JWT_TOKEN as string
           );
           res.send(token);

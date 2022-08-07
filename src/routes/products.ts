@@ -2,6 +2,8 @@ import express from "express";
 import { productStore, product } from "../models/product";
 import dashboard from "../services/dashboard";
 import validateID from "../utilities/validateID";
+import verifyAuthentication from "../middlewares/verifyAuthentication";
+import verifyAdmin from "../middlewares/verifyAdmin";
 
 const board = new dashboard();
 const store = new productStore();
@@ -57,29 +59,35 @@ products.get("/category/:category", async (req, res): Promise<void> => {
   }
 });
 
-products.post("/", async (req, res): Promise<void> => {
-  try {
-    if (
-      typeof req.body.name == "undefined" ||
-      typeof req.body.price == "undefined" ||
-      isNaN(parseFloat(req.body.price))
-    ) {
-      res
-        .status(400)
-        .send("Bad Request: You must provide a name and numeric price");
-      return;
+products.post(
+  "/",
+  verifyAuthentication,
+  verifyAdmin,
+  async (req, res): Promise<void> => {
+    try {
+      if (
+        typeof req.body.name == "undefined" ||
+        typeof req.body.price == "undefined" ||
+        isNaN(parseFloat(req.body.price))
+      ) {
+        res
+          .status(400)
+          .send("Bad Request: You must provide a name and numeric price");
+        return;
+      }
+      const name = req.body.name;
+      const price = parseFloat(req.body.price);
+      let category = null;
+      if (typeof req.body.category != "undefined") {
+        category = req.body.category;
+      }
+      const result = await store.create(name, price, category);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Server issue - try later");
     }
-    const name = req.body.name;
-    const price = parseFloat(req.body.price);
-    let category = null;
-    if (typeof req.body.category != "undefined") {
-      category = req.body.category;
-    }
-    const result = await store.create(name, price, category);
-    res.json(result);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Server issue - try later");
   }
-});
+);
+
 export default products;

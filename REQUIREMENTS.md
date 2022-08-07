@@ -10,24 +10,24 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 - Index `[GET] 'products/'`
 - Show `[GET] 'products/:id'`
-- Create [token required] `[POST] products/`
+- Create [token and admin required] `[POST] products/`
 - [OPTIONAL] Products by category (args: product category) `[GET] products/category/:category`
 - [OPTIONAL] Top 5 most popular products
 
 #### Users
 
-- Index [token required] `[GET] 'users/'`
-- Show [token required] `[GET] 'users/:user_name'`
+- Index [token and admin required] `[GET] 'users/'`
+- Show [token and admin required] `[GET] 'users/:user_name'`
 - Create `[POST] 'users/'`
 - Authenticate `[POST] 'users/authenticate'`
-- Current Orders by user (args: user id) [token required] `[GET] 'users/:user_name/orders/'`
-- [OPTIONAL] Completed Orders by user [token required] `[GET] 'users/:user_name/orders/completed'`
+- Current Orders by user (args: user id) [token and identity required] `[GET] 'users/:user_name/orders/'`
+- Completed Orders by user [token and identity required] `[GET] 'users/:user_name/orders/completed'`
 
 #### Orders
 
-- Index `[GET] 'orders/'`
-- Show [token required] `[GET] 'orders/:id'`
-- Create `[POST] 'orders/'`
+- Index [token and admin required] `[GET] 'orders/'`
+- Show [token and admin required] `[GET] 'orders/:id'`
+- Create [token required] `[POST] 'orders/'`
 
 ## Data Shapes
 

@@ -9,7 +9,7 @@ const verifyAuthentication = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const tokenSecret = process.env.TOKEN_SECRET as Secret;
+    const tokenSecret = process.env.JWT_TOKEN as Secret;
     const authorizationHeader = req.headers.authorization as string;
     const token = authorizationHeader.split(" ")[1];
     await jwt.verify(token, tokenSecret);
