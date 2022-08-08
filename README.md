@@ -4,18 +4,29 @@
 
 ### Build the database
 
-On your local machine, you need to create two databases: one for development (store_dev) and one for testing (store_test). The two databases should be created on a postgres using the variables listed below.
+On your local machine, you need to create two databases: one for development (store_dev) and one for testing (store_test). The two databases run on the **localhost** server on the default port **5432** and instructions to build both are listed below
+
+- Connect to the database using the default postgres user through running this command
+  `psql -U postgres`
+- If you have already added a password to this user, you need to provide this password
+- Run the following command to create a specific user for your node application
+  `CREATE USER node WITH PASSWORD 'password'`
+- Run the following commands to Create the two databases
+  `CREATE DATABASE store_dev`
+  `CREATE DATABASE store_test`
+- Finally, Run the following to Grant full privilages to the **node** user on your two databases
+  `GRANT ALL PRIVILEGES ON DATABASE store_dev TO node;`
+  `GRANT ALL PRIVILEGES ON DATABASE store_test TO node;`
+
+### Start the project
+
+First, initalize the application and install the packages on your local machine, using `npm install`. Then, Create a .env file that includes the following variables
 
 - PG_USER=node
 - PG_PASSWORD=password
 - PG_DB_DEV=store_dev
 - PG_DB_TEST=store_test
 - PG_HOST=127.0.0.1
-
-### Start the project
-
-First, initalize the application and install the packages on your local machine, using `npm install`. Then, Create a .env file that includes the 5 database variables listed above in addition to the 4 below
-
 - NODE_ENV=dev
 - JWT_TOKEN=thisissecret
 - SALT_ROUNDS=10
