@@ -19,11 +19,13 @@ On your local machine, you need to create two databases: one for development (st
 - Run the following commands to Create the two databases
 
   `CREATE DATABASE store_dev`
+
   `CREATE DATABASE store_test`
 
 - Finally, Run the following to Grant full privilages to the **node** user on your two databases
 
   `GRANT ALL PRIVILEGES ON DATABASE store_dev TO node;`
+
   `GRANT ALL PRIVILEGES ON DATABASE store_test TO node;`
 
 ### Start the project
