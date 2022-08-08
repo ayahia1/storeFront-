@@ -7,8 +7,7 @@
 - Index `[GET] 'products/'`
 - Show `[GET] 'products/:id'`
 - Create [token and admin required] `[POST] products/`
-- [OPTIONAL] Products by category (args: product category) `[GET] products/category/:category`
-- [OPTIONAL] Top 5 most popular products
+- Products by category (args: product category) `[GET] products/category/:category`
 
 #### Users
 
