@@ -14,13 +14,13 @@ On your local machine, you need to create two databases: one for development (st
 
 - Run the following command to create a specific user for your node application
 
-  `CREATE USER node WITH PASSWORD 'password'`
+  `CREATE USER node WITH PASSWORD 'password';`
 
 - Run the following commands to Create the two databases
 
-  `CREATE DATABASE store_dev`
+  `CREATE DATABASE store_dev;`
 
-  `CREATE DATABASE store_test`
+  `CREATE DATABASE store_test;`
 
 - Finally, Run the following to Grant full privilages to the **node** user on your two databases
 
