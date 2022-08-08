@@ -42,7 +42,7 @@ The api developers created unit and integration tests for all routes and models 
 
 ### How to use
 
-To start the application and get it running for your own uses, run `npm start`. All endpoints are listed in the [a relative link](REQUIREMENTS.md) file along with the requirments for each one.
+To start the application and get it running for your own uses, run `npm start`. All endpoints are listed in the [REQUIREMENTS](REQUIREMENTS.md) file along with the requirments for each one.
 
 Please note that some endpoints require authorization token; admin privilages; and identity check for personal information. Tokens are passed in the request headers in the following format
 
