@@ -1,15 +1,22 @@
 import supertest from "supertest";
 import app from "../../server";
+import { adminToken } from "./adminCreateSpec";
 const Request = supertest(app);
 
 describe("Users Route Tests", () => {
   it("Checking the index route", async () => {
-    const Response = await Request.get("/users/");
+    const Response = await Request.get("/users/").set(
+      "Authorization",
+      `Bearer ${adminToken}`
+    );
     expect(Response.statusCode).toBe(200);
   });
 
   it(`Checking that the show route throws a 404 Error for invalid ID`, async () => {
-    const Response = await Request.get("/users/300");
+    const Response = await Request.get("/users/300").set(
+      "Authorization",
+      `Bearer ${adminToken}`
+    );
     expect(Response.statusCode).toBe(404);
   });
 
@@ -26,7 +33,10 @@ describe("Users Route Tests", () => {
   });
 
   it(`Checking that the show route works`, async () => {
-    const Response = await Request.get("/users/ihassou1");
+    const Response = await Request.get("/users/ihassou1").set(
+      "Authorization",
+      `Bearer ${adminToken}`
+    );
     expect(Response.statusCode).toEqual(200);
     expect(Response.body.first_name).toEqual("Ibrahem");
   });
@@ -43,13 +53,19 @@ describe("Users Route Tests", () => {
   });
 
   it(`Checking that the show by user_name route works`, async () => {
-    const Response = await Request.get("/users/ayahia1/orders");
+    const Response = await Request.get("/users/admin/orders").set(
+      "Authorization",
+      `Bearer ${adminToken}`
+    );
     expect(Response.statusCode).toEqual(200);
-    expect(Response.body[0].user_name).toBe("ayahia1");
+    expect(Response.body[0].user_name).toBe("admin");
   });
 
   it(`Checking that show completed by user_name route works`, async () => {
-    const Response = await Request.get("/users/ayahia1/orders/completed");
+    const Response = await Request.get("/users/admin/orders/completed").set(
+      "Authorization",
+      `Bearer ${adminToken}`
+    );
     expect(Response.statusCode).toEqual(200);
     expect(Response.body.length).toBe(0);
   });

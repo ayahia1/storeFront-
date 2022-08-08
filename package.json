@@ -7,7 +7,7 @@
     "testdb-reset": "db-migrate reset --e test",
     "testdb-up": "db-migrate --e test up",
     "start-ts": "nodemon src/server.ts",
-    "test-ts": "set NODE_ENV=test&& npm run testdb-up && jasmine-ts src/**/*[sS]pec.ts && npm run testdb-reset",
+    "test-ts": "set NODE_ENV=test&& npm run testdb-up && jasmine-ts src/**/**[sS]pec.ts && npm run testdb-reset",
     "build": "npx tsc",
     "start": "npm run build && node dist/server.js",
     "test": "npm run build && set NODE_ENV=test&& npm run testdb-up && jasmine && npm run testdb-reset"

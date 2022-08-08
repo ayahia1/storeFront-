@@ -1,5 +1,6 @@
 import supertest from "supertest";
 import app from "../../server";
+import { adminToken } from "./adminCreateSpec";
 const Request = supertest(app);
 
 describe(`Products Route Tests`, () => {
@@ -20,7 +21,8 @@ describe(`Products Route Tests`, () => {
     };
     const Response = await Request.post("/products/")
       .send(body)
-      .set("Accept", "application/json");
+      .set("Accept", "application/json")
+      .set("Authorization", `Bearer ${adminToken}`);
     expect(Response.body.price).toBe(3);
   });
 

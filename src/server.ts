@@ -2,9 +2,11 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import routes from "./routes";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app: express.Application = express();
-const address: string = "0.0.0.0:3000";
+const address: string = (process.env.port as string) || "3000";
 
 const corsOption = {
   optionsSuccessStatus: 200, // for some lagacy browsers
